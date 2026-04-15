@@ -10,6 +10,7 @@ import {ClinicLayout} from "@/components/clinic/ClinicLayout";
 import {CommandPalette} from "@/components/CommandPalette";
 import {KeyboardShortcuts} from "@/components/KeyboardShortcuts";
 import {ErrorBoundary} from "@/components/ErrorBoundary";
+import {Analytics} from "@vercel/analytics/react";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -70,6 +71,7 @@ const App = () => (
             </ErrorBoundary>
           </AuthProvider>
         </BrowserRouter>
+        <Analytics />
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
