@@ -1,0 +1,185 @@
+-- ============================================================
+-- ROLLBACK: 20260405000005_enforce_clinic_member_permissions_in_rls
+-- ============================================================
+-- Reverts to the state BEFORE the permissions enforcement migration.
+-- After this rollback, is_clinic_admin_for() will again grant access
+-- to ALL data of a psychologist regardless of the permissions field.
+--
+-- Execute this in Supabase SQL Editor ONLY if you need to undo
+-- migration 20260405000005.
+-- ============================================================
+
+-- ============================================================
+-- 1. REMOVE the new permission-aware function
+-- ============================================================
+
+DROP FUNCTION IF EXISTS public.clinic_admin_has_perm(UUID, TEXT);
+
+-- ============================================================
+-- 2. PATIENTS — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own patients"   ON public.patients;
+DROP POLICY IF EXISTS "Users can insert own patients" ON public.patients;
+DROP POLICY IF EXISTS "Users can update own patients" ON public.patients;
+DROP POLICY IF EXISTS "Users can delete own patients" ON public.patients;
+
+CREATE POLICY "Users can view own patients" ON public.patients
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own patients" ON public.patients
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can update own patients" ON public.patients
+  FOR UPDATE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can delete own patients" ON public.patients
+  FOR DELETE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 3. SESSIONS — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own sessions"   ON public.sessions;
+DROP POLICY IF EXISTS "Users can insert own sessions" ON public.sessions;
+DROP POLICY IF EXISTS "Users can update own sessions" ON public.sessions;
+DROP POLICY IF EXISTS "Users can delete own sessions" ON public.sessions;
+
+CREATE POLICY "Users can view own sessions" ON public.sessions
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own sessions" ON public.sessions
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can update own sessions" ON public.sessions
+  FOR UPDATE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can delete own sessions" ON public.sessions
+  FOR DELETE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 4. PAYMENTS — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own payments"   ON public.payments;
+DROP POLICY IF EXISTS "Users can insert own payments" ON public.payments;
+DROP POLICY IF EXISTS "Users can update own payments" ON public.payments;
+DROP POLICY IF EXISTS "Users can delete own payments" ON public.payments;
+
+CREATE POLICY "Users can view own payments" ON public.payments
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own payments" ON public.payments
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can update own payments" ON public.payments
+  FOR UPDATE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can delete own payments" ON public.payments
+  FOR DELETE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 5. SESSION_NOTES — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own session_notes"   ON public.session_notes;
+DROP POLICY IF EXISTS "Users can insert own session_notes" ON public.session_notes;
+DROP POLICY IF EXISTS "Users can update own session_notes" ON public.session_notes;
+DROP POLICY IF EXISTS "Users can delete own session_notes" ON public.session_notes;
+
+CREATE POLICY "Users can view own session_notes" ON public.session_notes
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own session_notes" ON public.session_notes
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can update own session_notes" ON public.session_notes
+  FOR UPDATE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can delete own session_notes" ON public.session_notes
+  FOR DELETE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 6. SESSION_NOTE_ATTACHMENTS — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own attachments"   ON public.session_note_attachments;
+DROP POLICY IF EXISTS "Users can insert own attachments" ON public.session_note_attachments;
+DROP POLICY IF EXISTS "Users can delete own attachments" ON public.session_note_attachments;
+
+CREATE POLICY "Users can view own attachments" ON public.session_note_attachments
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own attachments" ON public.session_note_attachments
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can delete own attachments" ON public.session_note_attachments
+  FOR DELETE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 7. ANAMNESIS — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own anamnesis"   ON public.anamnesis;
+DROP POLICY IF EXISTS "Users can insert own anamnesis" ON public.anamnesis;
+DROP POLICY IF EXISTS "Users can update own anamnesis" ON public.anamnesis;
+
+CREATE POLICY "Users can view own anamnesis" ON public.anamnesis
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own anamnesis" ON public.anamnesis
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can update own anamnesis" ON public.anamnesis
+  FOR UPDATE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 8. PACKAGES — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own packages"   ON public.packages;
+DROP POLICY IF EXISTS "Users can insert own packages" ON public.packages;
+DROP POLICY IF EXISTS "Users can update own packages" ON public.packages;
+DROP POLICY IF EXISTS "Users can delete own packages" ON public.packages;
+
+CREATE POLICY "Users can view own packages" ON public.packages
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own packages" ON public.packages
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can update own packages" ON public.packages
+  FOR UPDATE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can delete own packages" ON public.packages
+  FOR DELETE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 9. PROFESSIONAL_SETTINGS — restore admin read access
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own settings" ON public.professional_settings;
+
+CREATE POLICY "Users can view own settings" ON public.professional_settings
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+-- ============================================================
+-- 10. WAITLIST — restore original policies
+-- ============================================================
+
+DROP POLICY IF EXISTS "Users can view own waitlist"   ON public.waitlist;
+DROP POLICY IF EXISTS "Users can insert own waitlist" ON public.waitlist;
+DROP POLICY IF EXISTS "Users can update own waitlist" ON public.waitlist;
+DROP POLICY IF EXISTS "Users can delete own waitlist" ON public.waitlist;
+
+CREATE POLICY "Users can view own waitlist" ON public.waitlist
+  FOR SELECT USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can insert own waitlist" ON public.waitlist
+  FOR INSERT WITH CHECK (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can update own waitlist" ON public.waitlist
+  FOR UPDATE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));
+
+CREATE POLICY "Users can delete own waitlist" ON public.waitlist
+  FOR DELETE USING (user_id = auth.uid() OR is_clinic_admin_for(user_id));

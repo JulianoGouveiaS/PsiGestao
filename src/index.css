@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 220 25% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+
+    --primary: 199 89% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 199 30% 94%;
+    --secondary-foreground: 199 89% 25%;
+
+    --muted: 210 15% 94%;
+    --muted-foreground: 215 15% 47%;
+
+    --accent: 165 60% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 199 89% 38%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 199 89% 38%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 199 30% 94%;
+    --sidebar-accent-foreground: 199 89% 25%;
+    --sidebar-border: 214 20% 88%;
+    --sidebar-ring: 199 89% 38%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Calendar overrides */
+.calendar-wrapper .rbc-calendar {
+  font-family: inherit;
+}
+
+.calendar-wrapper .rbc-header {
+  padding: 8px 4px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.calendar-wrapper .rbc-today {
+  background-color: hsl(var(--primary) / 0.05);
+}
+
+.calendar-wrapper .rbc-off-range-bg {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+.calendar-wrapper .rbc-time-header,
+.calendar-wrapper .rbc-time-content {
+  border-color: hsl(var(--border));
+}
+
+.calendar-wrapper .rbc-timeslot-group {
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+}
+
+.calendar-wrapper .rbc-time-slot {
+  border-top: none;
+}
+
+.calendar-wrapper .rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid hsl(var(--border) / 0.3);
+}
+
+.calendar-wrapper .rbc-current-time-indicator {
+  background-color: hsl(var(--primary));
+  height: 2px;
+}
+
+.calendar-wrapper .rbc-toolbar {
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.calendar-wrapper .rbc-toolbar button {
+  border-radius: 6px;
+  border: 1px solid hsl(var(--border));
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: hsl(var(--foreground));
+  background: transparent;
+}
+
+.calendar-wrapper .rbc-toolbar button:hover {
+  background-color: hsl(var(--muted));
+}
+
+.calendar-wrapper .rbc-toolbar button.rbc-active {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.calendar-wrapper .rbc-event {
+  border: none !important;
+  outline: none !important;
+}
+
+.calendar-wrapper .rbc-event.rbc-selected {
+  opacity: 0.85;
+}
+
+.calendar-wrapper .rbc-time-view,
+.calendar-wrapper .rbc-month-view {
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.calendar-wrapper .rbc-label {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  padding: 0 8px;
+}
+
+/* Month view fixes */
+.calendar-wrapper .rbc-month-view {
+  height: 100%;
+}
+
+.calendar-wrapper .rbc-month-row {
+  overflow: visible;
+}
+
+.calendar-wrapper .rbc-row-content {
+  z-index: 1;
+}
+
+.calendar-wrapper .rbc-month-view .rbc-event {
+  padding: 2px 4px;
+  font-size: 0.75rem;
+}
+
+.calendar-wrapper .rbc-show-more {
+  color: hsl(var(--primary));
+  font-size: 0.75rem;
+  font-weight: 500;
+}
