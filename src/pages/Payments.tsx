@@ -230,8 +230,8 @@ function PatientDebtRow({ patient, onRegister }: { patient: PatientDebt; onRegis
         </div>
         {allPaid
           ? <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 border-0">Quitado</Badge>
-          : <Button size="sm" onClick={() => onRegister(patient)}>
-              <CreditCard className="h-3.5 w-3.5 mr-1.5" /> Registrar
+          : <Button size="sm" variant="outline" onClick={() => onRegister(patient)} className="gap-1.5 text-muted-foreground hover:text-foreground">
+              <CreditCard className="h-3.5 w-3.5" /> Registrar
             </Button>}
       </div>
 
