@@ -89,9 +89,9 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
   const updateSession = useUpdateSession();
   const rescheduleSession = useRescheduleSession();
   const updateSessionSeries = useUpdateSessionSeries();
+  // Used only to keep payment.total_amount in sync when session price is edited
   const updatePayment = useUpdatePayment();
   const generateMeetLink = useGenerateMeetLink();
-  const [paymentAmount, setPaymentAmount] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [autoSaveTimer, setAutoSaveTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [saved, setSaved] = useState(false);
@@ -283,37 +283,6 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
       await updateSession.mutateAsync({ id: session.id, status: "cancelled" as SessionStatus });
       toast.success("Sessão cancelada.");
       setConfirmCancel(false);
-    } catch (err: any) {
-      toast.error("Erro", { description: err.message });
-    }
-  };
-
-  const handleRegisterPayment = async () => {
-    if (!payment) return;
-    const value = parseFloat(paymentAmount);
-    if (isNaN(value) || value <= 0) {
-      toast.error("Informe um valor válido");
-      return;
-    }
-    if (value > remaining) {
-      toast.error("Valor excede o restante", { description: `O máximo é R$ ${remaining.toFixed(2)}` });
-      return;
-    }
-    const newAmountPaid = amountPaid + value;
-    try {
-      await updatePayment.mutateAsync({ id: payment.id, amount_paid: newAmountPaid, total_amount: totalAmount });
-      toast.success(`R$ ${value.toFixed(2)} registrado!`);
-      setPaymentAmount("");
-    } catch (err: any) {
-      toast.error("Erro", { description: err.message });
-    }
-  };
-
-  const handlePayFull = async () => {
-    if (!payment) return;
-    try {
-      await updatePayment.mutateAsync({ id: payment.id, amount_paid: totalAmount, total_amount: totalAmount });
-      toast.success("Pagamento integral registrado!");
     } catch (err: any) {
       toast.error("Erro", { description: err.message });
     }
@@ -551,7 +520,7 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
 
             <Separator />
 
-            {/* Payment */}
+            {/* Payment — read-only display. Management is done in /payments */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4 text-muted-foreground" />
@@ -574,16 +543,12 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
                   </p>
                 </div>
               </div>
-              {canManageSessions && payment && remaining > 0 && (
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Label htmlFor="payAmount" className="sr-only">Valor</Label>
-                    <Input id="payAmount" type="number" min="0.01" max={remaining} step="0.01" placeholder={`Até R$ ${remaining.toFixed(2)}`} value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} className="h-9" />
-                  </div>
-                  <Button size="sm" className="h-9" onClick={handleRegisterPayment} disabled={updatePayment.isPending}>Registrar</Button>
-                  <Button size="sm" variant="outline" className="h-9" onClick={handlePayFull} disabled={updatePayment.isPending}>Pagar tudo</Button>
-                </div>
-              )}
+              <p className="text-xs text-muted-foreground">
+                Para registrar pagamentos, acesse a tela de{" "}
+                <a href="/payments" className="text-primary underline-offset-2 hover:underline">
+                  Pagamentos
+                </a>.
+              </p>
             </div>
           </TabsContent>
 
