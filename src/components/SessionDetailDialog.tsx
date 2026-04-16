@@ -30,6 +30,7 @@ import {
     CalendarDays,
     Check,
     Clock,
+    DollarSign,
     Download,
     ExternalLink,
     FileText,
@@ -320,9 +321,9 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
             </div>
           )}
 
-          {/* Date / time / modality */}
+          {/* Date / time / modality / price */}
           {!editMode && (
-            <div className="flex gap-6 px-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-1.5 px-2">
               <div className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-foreground">{format(date, "dd/MM/yyyy", { locale: ptBR })}</span>
@@ -334,6 +335,12 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
               <div className="flex items-center gap-2">
                 {isOnline ? <Video className="h-4 w-4 text-muted-foreground" /> : <MapPin className="h-4 w-4 text-muted-foreground" />}
                 <span className="text-sm text-foreground">{isOnline ? "Online" : "Presencial"}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-foreground">
+                  {Number(session.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </span>
               </div>
             </div>
           )}
