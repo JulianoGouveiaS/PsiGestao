@@ -225,7 +225,17 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
   const handleConfirmCancel = async () => {
     try {
       await updateSession.mutateAsync({ id: session.id, status: "cancelled" as SessionStatus });
-      toast.success("Sessão cancelada.");
+      // Cancellation originated by the professional → auto-mark payment as paid
+      // so the session does not appear as debt in the Payments screen.
+      const payment = session.payments?.[0];
+      if (payment) {
+        await updatePayment.mutateAsync({
+          id: payment.id,
+          amount_paid: Number(payment.total_amount),
+          total_amount: Number(payment.total_amount),
+        });
+      }
+      toast.success("Sessão cancelada — pagamento marcado como quitado.");
       setConfirmCancel(false);
     } catch (err: any) {
       toast.error("Erro", { description: err.message });
@@ -558,8 +568,8 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
         <AlertDialogHeader>
           <AlertDialogTitle>Cancelar sessão?</AlertDialogTitle>
           <AlertDialogDescription>
-            A sessão será marcada como <strong>Cancelada</strong>. O pagamento associado
-            permanecerá pendente — registre o reembolso manualmente se necessário.
+            A sessão será marcada como <strong>Cancelada</strong> e o pagamento será automaticamente
+            marcado como <strong>quitado</strong>, pois o cancelamento foi originado pelo profissional.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
