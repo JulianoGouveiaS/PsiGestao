@@ -415,33 +415,12 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
               </div>
             </div>
 
-            {/* Reschedule */}
-            {canManageSessions && !isRescheduled && !isCancelled && (
-              <Button variant="outline" size="sm" className="w-full" onClick={() => { setRescheduleDate(""); setRescheduleOpen(true); }}>
-                <RefreshCw className="h-3 w-3 mr-1" /> Remarcar sessão
-              </Button>
-            )}
+            {/* Reschedule — moved to footer */}
 
             {session.rescheduled_from && (
               <p className="text-xs text-muted-foreground italic">
                 ↳ Esta sessão foi remarcada a partir de outra sessão.
               </p>
-            )}
-
-            {/* Delete — hard rollback */}
-            {canManageSessions && (
-              <>
-                <div className="pt-1 border-t border-border" />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => setConfirmDelete(true)}
-                >
-                  <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                  Excluir sessão
-                </Button>
-              </>
             )}
           </TabsContent>
 
@@ -546,6 +525,29 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Footer actions */}
+        {canManageSessions && (
+          <div className="flex gap-2 pt-2 border-t border-border">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              disabled={isRescheduled || isCancelled}
+              onClick={() => { setRescheduleDate(""); setRescheduleOpen(true); }}
+            >
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Remarcar
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setConfirmDelete(true)}
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Excluir sessão
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
 
