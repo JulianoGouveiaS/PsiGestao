@@ -257,6 +257,55 @@ export function useRescheduleSession() {
 }
 
 /**
+ * Hard-deletes a session and rolls back all side effects:
+ * - deletes associated payments
+ * - decrements the active package counter (unless session was already in a slot-freeing status)
+ * - deletes the session record itself
+ *
+ * Use this to correct erroneously created sessions.
+ */
+export function useDeleteSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (sessionId: string) => {
+      // 1. Fetch session to know patient, user, and current status
+      const { data: session, error: fetchErr } = await supabase
+        .from("sessions")
+        .select("id, patient_id, user_id, status")
+        .eq("id", sessionId)
+        .single();
+      if (fetchErr) throw fetchErr;
+
+      // 2. Delete associated payments
+      const { error: payErr } = await supabase
+        .from("payments")
+        .delete()
+        .eq("session_id", sessionId);
+      if (payErr) throw payErr;
+
+      // 3. Rollback package slot only if session was NOT already in a slot-freeing status
+      //    (cancelled/rescheduled already decremented the counter when they transitioned)
+      if (!STATUSES_THAT_FREE_SLOT.has(session.status)) {
+        await decrementActivePackage(session.patient_id, session.user_id);
+      }
+
+      // 4. Delete the session itself
+      const { error: delErr } = await supabase
+        .from("sessions")
+        .delete()
+        .eq("id", sessionId);
+      if (delErr) throw delErr;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      queryClient.invalidateQueries({ queryKey: ["packages"] });
+    },
+  });
+}
+
+/**
  * Updates all SCHEDULED sessions that share the same series_id.
  * Fields supported: scheduled_at offset (shift), price, modality.
  */

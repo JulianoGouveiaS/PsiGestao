@@ -35,6 +35,7 @@ export function SessionFormDialog({ open, onOpenChange, defaultDate }: SessionFo
   const [price, setPrice] = useState("");
   const [modality, setModality] = useState<SessionModality>("presencial");
   const [recurring, setRecurring] = useState(false);
+  const [recurrenceInterval, setRecurrenceInterval] = useState<1 | 2>(1); // 1 = weekly, 2 = biweekly
   const [weeks, setWeeks] = useState("4");
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -65,6 +66,7 @@ export function SessionFormDialog({ open, onOpenChange, defaultDate }: SessionFo
       setPrice("");
       setModality("presencial");
       setRecurring(false);
+      setRecurrenceInterval(1);
       setWeeks("4");
       setErrors({});
     }
@@ -74,7 +76,7 @@ export function SessionFormDialog({ open, onOpenChange, defaultDate }: SessionFo
 
   const previewDates = scheduledAt
     ? Array.from({ length: recurring ? weeksNum : 1 }, (_, i) =>
-        addWeeks(new Date(scheduledAt), i)
+        addWeeks(new Date(scheduledAt), i * recurrenceInterval)
       )
     : [];
 
@@ -208,7 +210,9 @@ export function SessionFormDialog({ open, onOpenChange, defaultDate }: SessionFo
               <Repeat className="h-4 w-4 text-primary" />
               <div>
                 <p className="text-sm font-medium">Sessão recorrente</p>
-                <p className="text-xs text-muted-foreground">Repetir semanalmente</p>
+                <p className="text-xs text-muted-foreground">
+                  {recurrenceInterval === 1 ? "Repetir semanalmente" : "Repetir quinzenalmente"}
+                </p>
               </div>
             </div>
             <Switch checked={recurring} onCheckedChange={setRecurring} />
@@ -216,8 +220,37 @@ export function SessionFormDialog({ open, onOpenChange, defaultDate }: SessionFo
 
           {recurring && (
             <div className="space-y-3 rounded-lg border border-dashed p-3">
+              {/* Interval selector */}
               <div className="space-y-2">
-                <Label>Repetir por quantas semanas?</Label>
+                <Label>Frequência</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={recurrenceInterval === 1 ? "default" : "outline"}
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setRecurrenceInterval(1)}
+                  >
+                    Semanal
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={recurrenceInterval === 2 ? "default" : "outline"}
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setRecurrenceInterval(2)}
+                  >
+                    Quinzenal
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>
+                  {recurrenceInterval === 1
+                    ? "Repetir por quantas semanas?"
+                    : "Repetir por quantas quinzenas?"}
+                </Label>
                 <Input
                   type="number"
                   min="1"

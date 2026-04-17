@@ -1,6 +1,5 @@
-import {Brain, Calendar, ClipboardList, DollarSign, LayoutDashboard, PackageIcon, Settings, Users} from "lucide-react";
+import {Brain, BarChart2, Calendar, ClipboardList, CreditCard, LayoutDashboard, PackageIcon, Settings, Users} from "lucide-react";
 import {NavLink} from "@/components/NavLink";
-import {useLocation} from "react-router-dom";
 import {
     Sidebar,
     SidebarContent,
@@ -14,20 +13,44 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 
-const menuItems = [
+const mainMenuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Agenda", url: "/agenda", icon: Calendar },
   { title: "Pacientes", url: "/patients", icon: Users },
   { title: "Pacotes", url: "/packages", icon: PackageIcon },
   { title: "Lista de Espera", url: "/waitlist", icon: ClipboardList },
-  { title: "Financeiro", url: "/finances", icon: DollarSign },
+];
+
+const financeMenuItems = [
+  { title: "Pagamentos", url: "/payments", icon: CreditCard },
+  { title: "Relatório", url: "/finances", icon: BarChart2 },
+];
+
+const bottomMenuItems = [
   { title: "Configurações", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
+
+  const renderItems = (items: typeof mainMenuItems) =>
+    items.map((item) => (
+      <SidebarMenuItem key={item.title}>
+        <SidebarMenuButton asChild>
+          <NavLink
+            to={item.url}
+            end
+            className="hover:bg-muted/50"
+            activeClassName="bg-primary/10 text-primary font-medium"
+            data-tour={item.url === "/dashboard" ? "dashboard" : undefined}
+          >
+            <item.icon className="mr-2 h-4 w-4" />
+            {!collapsed && <span>{item.title}</span>}
+          </NavLink>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    ));
 
   return (
     <Sidebar collapsible="icon" data-tour="sidebar">
@@ -45,24 +68,20 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end
-                      className="hover:bg-muted/50"
-                      activeClassName="bg-primary/10 text-primary font-medium"
-                      data-tour={item.url === "/dashboard" ? "dashboard" : undefined}
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <SidebarMenu>{renderItems(mainMenuItems)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Financeiro</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{renderItems(financeMenuItems)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>{renderItems(bottomMenuItems)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

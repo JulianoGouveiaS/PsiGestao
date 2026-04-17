@@ -21,6 +21,7 @@ import PatientProfile from "./pages/PatientProfile";
 import Agenda from "./pages/Agenda";
 import Packages from "./pages/Packages";
 import Finances from "./pages/Finances";
+import Payments from "./pages/Payments";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Waitlist from "./pages/Waitlist";
@@ -59,6 +60,7 @@ const App = () => (
                 <Route path="/agenda" element={<ProtectedRoute><AppLayout><Agenda /></AppLayout></ProtectedRoute>} />
                 <Route path="/packages" element={<ProtectedRoute><AppLayout><Packages /></AppLayout></ProtectedRoute>} />
                 <Route path="/finances" element={<ProtectedRoute><AppLayout><Finances /></AppLayout></ProtectedRoute>} />
+                <Route path="/payments" element={<ProtectedRoute><AppLayout><Payments /></AppLayout></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
                 <Route path="/waitlist" element={<ProtectedRoute><AppLayout><Waitlist /></AppLayout></ProtectedRoute>} />
                 <Route path="/clinic/dashboard" element={<ProtectedRoute><ClinicLayout><ClinicDashboard /></ClinicLayout></ProtectedRoute>} />

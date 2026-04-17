@@ -239,8 +239,8 @@ export default function Finances() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Financeiro</h1>
-        <p className="text-sm text-muted-foreground">Controle completo de receitas e pagamentos</p>
+        <h1 className="text-2xl font-bold text-foreground">Relatório Financeiro</h1>
+        <p className="text-sm text-muted-foreground">Visão analítica de receitas, sessões e desempenho</p>
       </div>
 
       <FinanceFilters
