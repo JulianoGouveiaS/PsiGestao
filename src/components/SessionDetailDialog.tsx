@@ -19,7 +19,7 @@ import {Separator} from "@/components/ui/separator";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {PatientProfileDialog} from "@/components/PatientProfileDialog";
-import {type Session, useRescheduleSession, useUpdateSession, useUpdateSessionSeries} from "@/hooks/useSessions";
+import {type Session, useRescheduleSession, useUpdateSession, useUpdateSessionSeries, useDeleteSession} from "@/hooks/useSessions";
 import {useUpdatePayment} from "@/hooks/usePayments";
 import {useSessionNotes, useUpsertSessionNote} from "@/hooks/useSessionNotes";
 import {useGenerateMeetLink} from "@/hooks/useMeetLink";
@@ -44,8 +44,7 @@ import {
     User,
     Video,
     X
-} from "lucide-react";
-import {
+} from "lucide-react";import {
     getAttachmentSignedUrl,
     useDeleteAttachment,
     useSessionAttachments,
@@ -83,12 +82,14 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
   const rescheduleSession = useRescheduleSession();
   const updateSessionSeries = useUpdateSessionSeries();
   const updatePayment = useUpdatePayment();
+  const deleteSession = useDeleteSession();
   const generateMeetLink = useGenerateMeetLink();
 
   const [noteContent, setNoteContent] = useState("");
   const [autoSaveTimer, setAutoSaveTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [saved, setSaved] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [patientProfileOpen, setPatientProfileOpen] = useState(false);
 
   // Reschedule modal state (separate modal on top)
@@ -239,6 +240,17 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
       setConfirmCancel(false);
     } catch (err: any) {
       toast.error("Erro", { description: err.message });
+    }
+  };
+
+  const handleDeleteSession = async () => {
+    try {
+      await deleteSession.mutateAsync(session.id);
+      toast.success("Sessão excluída — pacote e pagamentos revertidos.");
+      setConfirmDelete(false);
+      onOpenChange(false);
+    } catch (err: any) {
+      toast.error("Erro ao excluir", { description: err.message });
     }
   };
 
@@ -415,6 +427,22 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
                 ↳ Esta sessão foi remarcada a partir de outra sessão.
               </p>
             )}
+
+            {/* Delete — hard rollback */}
+            {canManageSessions && (
+              <>
+                <div className="pt-1 border-t border-border" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => setConfirmDelete(true)}
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                  Excluir sessão
+                </Button>
+              </>
+            )}
           </TabsContent>
 
           <TabsContent value="notes" className="mt-4">
@@ -579,8 +607,31 @@ export function SessionDetailDialog({ open, onOpenChange, session, canManageSess
       </AlertDialogContent>
     </AlertDialog>
 
-    <AlertDialog open={confirmSeriesEdit} onOpenChange={setConfirmSeriesEdit}>
+    <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
       <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+            <Trash2 className="h-4 w-4" /> Excluir sessão?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta ação é <strong>irreversível</strong>. A sessão será permanentemente removida junto com seu pagamento.
+            Se havia um pacote ativo, a sessão será devolvida ao pacote.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            onClick={handleDeleteSession}
+            disabled={deleteSession.isPending}
+          >
+            {deleteSession.isPending ? "Excluindo..." : "Excluir permanentemente"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={confirmSeriesEdit} onOpenChange={setConfirmSeriesEdit}>      <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <Layers className="h-4 w-4 text-primary" /> Sessão em série
